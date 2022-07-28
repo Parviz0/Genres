@@ -7,66 +7,36 @@ let promo__bg = document.querySelector('.promo__bg')
 let promo__genre = document.querySelector(".promo__genre");
 let promo__title = document.querySelector(".promo__title");
 let promo__descr = document.querySelector(".promo__descr")
-
-let drama = document.querySelector('.drama')
-let comedi = document.querySelector('.comedi')
-let action = document.querySelector('.action')
-let milodram = document.querySelector('.milodram')
-let fantastic = document.querySelector('.fantastic')
-
 let imdb = document.querySelector(".imdb");
 let reserch = document.querySelector(".reserch");
+let search = document.querySelector('#search')
+let genUl = document.querySelector('.genresUl')
+let genres_arr = ['All']
+
+search.onkeyup = () => {
 
 
-drama.onclick = () => {
+    let filtered = movies.filter(item => {
+        let title = item.Title.toLowerCase()
+        let value = search.value.toLowerCase().trim()
 
-    let filteredFilm = movies.filter(props => props.Genre.includes('Drama'))
+        if(title.includes(value)) {
+            return item
+        }
+    })
 
-    changeFilm(filteredFilm[0])
-
-    reload(filteredFilm)
-    console.log('hi');
-}
-comedi.onclick = () => {
-
-    let filteredFilm = movies.filter(props => props.Genre.includes('Comedy'))
-
-    changeFilm(filteredFilm[0])
-
-
-    reload(filteredFilm)
-}
-action.onclick = () => {
-
-    let filteredFilm = movies.filter(props => props.Genre.includes('Action'))
-
-    changeFilm(filteredFilm[0])
-
-    reload(filteredFilm)
-}
-milodram.onclick = () => {
-
-    let filteredFilm = movies.filter(props => props.Genre.includes('Adventure'))
-
-    changeFilm(filteredFilm[0])
-
-    reload(filteredFilm)
-}
-fantastic.onclick = () => {
-
-    let filteredFilm = movies.filter(props => props.Genre.includes('Sci-Fi'))
-
-    changeFilm(filteredFilm[0])
-
-    reload(filteredFilm)
+    reload(filtered)
 }
 
 
 
 function reload(arr) {
     ul.innerHTML = ""
+    changeFilm(arr[0])
 
     arr.forEach((movie, index) => {
+        genres_arr.push(movie.Genre)
+
         let li = document.createElement('li')
         let del = document.createElement('div')
 
@@ -86,11 +56,12 @@ function reload(arr) {
 reload(movies)
 
 let btns = document.querySelectorAll(".promo__menu-item")
+
 function changeFilm(props) {
     promo__bg.style.backgroundImage = `url("${props.Poster}")`
-    promo__genre.innerHTML = `${props.Genre};`
-    promo__title.innerHTML = `${props.Title};`
-    promo__descr.innerHTML = `${props.Plot}`
+    promo__genre.innerHTML = props.Genre
+    promo__title.innerHTML = props.Title
+    promo__descr.innerHTML = props.Plot
     imdb.innerHTML = `IMDb: ${props.imdbRating}`
     reserch.innerHTML = `Кинопоиск: ${props.Metascore}`
 }
@@ -104,3 +75,45 @@ btns.forEach(btn => {
     }
     
 })
+
+genres_arr = [...new Set(genres_arr)]
+
+generateGenres(genres_arr)
+function generateGenres(arr) {
+    genUl.innerHTML = ""
+
+    for(let item of arr) {
+        let li = document.createElement('li')
+        let a = document.createElement('a')
+
+        if(arr.indexOf(item) === 0 ) {
+            a.classList.add('promo__menu-item_active')
+        }
+
+        a.classList.add('promo__menu-item')
+        a.href = "#"
+        a.innerHTML = item
+
+
+        li.append(a)
+        genUl.append(li)
+        // functions
+        li.onclick = () => {
+            genUl.childNodes.forEach(elem => elem.firstChild.classList.remove('promo__menu-item_active'))
+
+            li.firstChild.classList.add('promo__menu-item_active')
+
+
+            let filtered = movies.filter(elem => {
+                let genre = elem.Genre.toLowerCase()
+                if(item.toLowerCase() === genre) {
+                    return elem
+                }
+            })
+
+
+            reload(filtered)
+        }
+
+    }
+}
