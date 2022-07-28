@@ -108,11 +108,13 @@ function generateGenres(arr) {
                 let genre = elem.Genre.toLowerCase()
                 if(item.toLowerCase() === genre) {
                     return elem
+                } else if(item.toLowerCase() === 'all') {
+                    reload(movies)
                 }
             })
 
 
-            reload(filtered)
+            if(filtered.length > 0) reload(filtered)
         }
 
     }
